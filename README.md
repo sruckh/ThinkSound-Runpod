@@ -1,8 +1,7 @@
 # 🎶 ThinkSound
 
-[![PyTorch](https://img.shields.io/badge/Framework-PyTorch-red?logo=pytorch)](https://pytorch.org/)  
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Stars](https://img.shields.io/github/stars/your-repo/ThinkSound?style=social)](https://github.com/your-repo/ThinkSound/stargazers)
+[![Stars](https://img.shields.io/github/stars/liuhuadai/ThinkSound?style=social)](https://github.com/liuhuadai/ThinkSound/stargazers)
 
 A PyTorch implementation of **ThinkSound**: a unified Any2Audio generation framework guided by Chain-of-Thought (CoT) reasoning.
 
@@ -21,4 +20,4 @@ Hi there! 👋 The code will be released next week. Stay tuned and star this rep
 
 ---
 
-✨ Feel free to [open an issue](https://github.com/your-repo/ThinkSound/issues) or [contact us](mailto:your-email@example.com) if you have any questions or suggestions!
+✨ Feel free to [open an issue](https://github.com/liuhuadai/ThinkSound/issues) or [contact us](liuhuadai@zju.edu.cn) if you have any questions or suggestions!
