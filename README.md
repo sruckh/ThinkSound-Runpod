@@ -1,8 +1,5 @@
 # 🎶 ThinkSound
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Stars](https://img.shields.io/github/stars/liuhuadai/ThinkSound?style=social)](https://github.com/liuhuadai/ThinkSound/stargazers)
-
 A PyTorch implementation of **ThinkSound**: a unified Any2Audio generation framework guided by Chain-of-Thought (CoT) reasoning.
 
 ---
