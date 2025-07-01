@@ -33,7 +33,7 @@ PyTorch implementation for multimodal audio generation and editing: generate or 
 
 ## 📰 News
 - **2025.07** &nbsp; 🔥Online demo on [Hugging Face Spaces](https://huggingface.co/spaces/FunAudioLLM/ThinkSound) and [ModelScope](https://modelscope.cn/studios/iic/ThinkSound) for interactive experience!
-- **2025.07** &nbsp; 🔥Released inference scripts; 
+- **2025.07** &nbsp; 🔥Released inference scripts and web interface; 
 - **2025.06** &nbsp; 🔥[ThinkSound paper](https://arxiv.org/pdf/2506.21448) released on arXiv!
 - **2025.06** &nbsp; 🔥[Online Demo](http://thinksound-project.github.io/) is live - try it now!
 
