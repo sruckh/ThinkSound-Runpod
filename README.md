@@ -71,7 +71,8 @@ git clone https://github.com/liuhuadai/ThinkSound.git
 cd ThinkSound
 pip install -r requirements.txt
 conda install -y -c conda-forge 'ffmpeg<7'
-# Download pretrained weights to Directory ckpts/
+# Download pretrained weights https://huggingface.co/liuhuadai/ThinkSound to Directory ckpts/
+# model weights can be also downloaded from https://www.modelscope.cn/models/iic/ThinkSound
 git lfs install
 git clone https://huggingface.co/liuhuadai/ThinkSound
 ```
