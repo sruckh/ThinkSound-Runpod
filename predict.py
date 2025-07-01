@@ -104,12 +104,12 @@ def main():
         sample_rate=model_config["sample_rate"],
         sample_size=(float)(args.duration_sec) * model_config["sample_rate"],
         audio_channels=model_config.get("audio_channels", 2),
-        latent_length=(int)(194/9*duration),
+        latent_length=round(44100/64/32*duration),
     )
     
     model_config["sample_size"] = duration * model_config["sample_rate"]
-    model_config["model"]["diffusion"]["config"]["sync_seq_len"] = round(24*duration)
-    model_config["model"]["diffusion"]["config"]["clip_seq_len"] = round(8*duration)
+    model_config["model"]["diffusion"]["config"]["sync_seq_len"] = 24*int(duration)
+    model_config["model"]["diffusion"]["config"]["clip_seq_len"] = 8*int(duration)
     model_config["model"]["diffusion"]["config"]["latent_seq_len"] = round(44100/64/32*duration)
 
     model = create_model_from_config(model_config)
@@ -150,6 +150,7 @@ def main():
     save_model_config_callback = ModelConfigEmbedderCallback(model_config)
     audio_dir = args.results_dir
     pred_writer = CustomWriter(output_dir=audio_dir, write_interval="batch", batch_size=args.test_batch_size)
+    timer = Timer(duration="00:15:00:00")
     demo_callback = create_demo_callback_from_config(model_config, demo_dl=dm)
 
     #Combine args and config dicts

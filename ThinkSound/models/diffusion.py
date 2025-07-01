@@ -7,7 +7,7 @@ import typing as tp
 
 from .blocks import ResConvBlock, FourierFeatures, Upsample1d, Upsample1d_2, Downsample1d, Downsample1d_2, SelfAttention1d, SkipBlock, expand_to_planes
 from .conditioners import MultiConditioner, create_multi_conditioner_from_conditioning_config
-from .dit import DiffusionTransformer
+# from .dit import DiffusionTransformer
 from .mmdit import MMAudio
 from .factory import create_pretransform_from_config
 from .pretransforms import Pretransform

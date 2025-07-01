@@ -845,8 +845,6 @@ class DiffusionCondTrainingWrapper(L.LightningModule):
 
     def predict_step(self, batch, batch_idx):
         reals, metadata = batch
-        import ipdb
-        ipdb.set_trace()
         ids = [item['id'] for item in metadata]
         batch_size, length = reals.shape[0], reals.shape[2]
         print(f"Predicting {batch_size} samples with length {length} for ids: {ids}")

@@ -12,14 +12,14 @@
   <a href="https://thinksound-project.github.io/">
     <img src="https://img.shields.io/badge/Online%20Demo-🌐-blue" alt="Online Demo"/>
   </a>
-  <!-- &nbsp;
+  &nbsp;
   <a href="https://huggingface.co/spaces/FunAudioLLM/ThinkSound">
     <img src="https://img.shields.io/badge/HuggingFace-Spaces-orange?logo=huggingface" alt="Hugging Face"/>
   </a>
   &nbsp;
-  <a href="https://www.modelscope.cn/studios/ThinkSound/ThinkSound/summary">
+  <a href="https://modelscope.cn/studios/iic/ThinkSound">
     <img src="https://img.shields.io/badge/ModelScope-在线体验-green" alt="ModelScope"/>
-  </a> -->
+  </a>
 </p>
 
 ---
@@ -32,7 +32,7 @@ PyTorch implementation for multimodal audio generation and editing: generate or 
 ---
 
 ## 📰 News
-<!-- online demo on [Hugging Face Spaces](#) and [ModelScope](#) for interactive experience! -->
+- **2025.07** &nbsp; 🔥Online demo on [Hugging Face Spaces](https://huggingface.co/spaces/FunAudioLLM/ThinkSound) and [ModelScope](https://modelscope.cn/studios/iic/ThinkSound) for interactive experience!
 - **2025.07** &nbsp; 🔥Released inference scripts; 
 - **2025.06** &nbsp; 🔥[ThinkSound paper](https://arxiv.org/pdf/2506.21448) released on arXiv!
 - **2025.06** &nbsp; 🔥[Online Demo](http://thinksound-project.github.io/) is live - try it now!

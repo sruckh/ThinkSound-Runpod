@@ -56,7 +56,7 @@ fi
 
 # Run inference
 echo "⏳ Running model inference..."
-bash infer.sh --duration-sec "$DURATION_SEC" 2>&1
+bash scripts/infer.sh --duration-sec "$DURATION_SEC" 2>&1
 if [ $? -ne 0 ]; then
     echo "❌ Inference failed"
     rm -f "$TEMP_VIDEO_PATH"
@@ -65,7 +65,7 @@ fi
 
 # Get generated audio file
 CURRENT_DATE=$(date +"%m%d")
-AUDIO_PATH="results/${CURRENT_DATE}_step68k_batch_size1/demo.wav"
+AUDIO_PATH="results/${CURRENT_DATE}_batch_size1/demo.wav"
 
 # Check if audio file exists
 if [ ! -f "$AUDIO_PATH" ]; then
