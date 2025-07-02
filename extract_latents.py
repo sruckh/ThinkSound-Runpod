@@ -3,8 +3,8 @@ import os
 import torch
 import torch.distributed as dist
 from torch.utils.data import DataLoader
-from tqdm import tqdm  # 导入 tqdm
-import logging  # 导入 logging
+from tqdm import tqdm  
+import logging  
 from data_utils.v2a_utils.vggsound_224_no_audio import VGGSound
 from data_utils.v2a_utils.feature_utils_224 import FeaturesUtils
 import torchaudio
@@ -54,7 +54,7 @@ def main(args):
     feature_extractor = feature_extractor
 
     for i, data in enumerate(tqdm(dataloader, desc="Processing", unit="batch")):
-        ids = data['id']  # 获取当前批次的所有 ID
+        ids = data['id']  
         with torch.no_grad():
             # audio = data['audio'].cuda(rank, non_blocking=True)
             output = {
@@ -62,13 +62,11 @@ def main(args):
                 'caption_cot': str(data['caption_cot'])
             }
             print(output)
-            # logging.info(f'Processing batch {i} with IDs: {ids}')  # 添加日志记录
 
             # latent = feature_extractor.module.encode_audio(audio)
             # output['latent'] = latent.detach().cpu()
 
             clip_video = data['clip_video'].cuda()
-            # logging.info(f'Processing batch {i} with shape: {clip_video.shape}')  # 添加日志记录
             clip_features = feature_extractor.encode_video_with_clip(clip_video)
             output['metaclip_features'] = clip_features.detach().cpu()
 

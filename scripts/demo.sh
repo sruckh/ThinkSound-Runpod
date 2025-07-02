@@ -77,5 +77,6 @@ fi
 # Clean up temporary video file
 rm -f "$TEMP_VIDEO_PATH"
 
+
 echo "✅ Audio generated successfully!"
 echo "Audio file path: $AUDIO_PATH"

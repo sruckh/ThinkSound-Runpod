@@ -42,10 +42,8 @@ class CustomWriter(BasePredictionWriter):
 
         audios = predictions
         ids = [item['id'] for item in batch[1]]
-        # 获取当前日期
         current_date = datetime.now()
 
-        # 格式化日期为 'MMDD' 形式
         formatted_date = current_date.strftime('%m%d')
         os.makedirs(os.path.join(self.output_dir, f'{formatted_date}_batch_size{self.batch_size}'),exist_ok=True)
         for audio, id in zip(audios, ids):
@@ -204,7 +202,6 @@ def main():
 
 
     current_date = datetime.now()
-    # 格式化日期为 'MMDD' 形式
     formatted_date = current_date.strftime('%m%d')
 
     audio_dir = f'{formatted_date}_step68k_batch_size'+str(args.test_batch_size)
