@@ -57,11 +57,12 @@ def main():
     args = get_all_args()
 
 
-    args.pretransform_ckpt_path = hf_hub_download(
-        repo_id="liuhuadai/ThinkSound",
-        filename="vae.ckpt"
-    )
+    # args.pretransform_ckpt_path = hf_hub_download(
+    #     repo_id="liuhuadai/ThinkSound",
+    #     filename="vae.ckpt"
+    # )
 
+    args.pretransform_ckpt_path = "./ckpts/vae.ckpt"
 
 
     seed = 10086

@@ -12,7 +12,6 @@ from einops import rearrange
 from torch.utils.data.dataloader import default_collate
 import numpy as np
 from huggingface_hub import hf_hub_download
-# 设置日志配置
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def setup(rank, world_size):
@@ -41,24 +40,20 @@ def main(args):
     )
     save_dir = args.save_dir
     os.makedirs(save_dir, exist_ok=True)
-    # 使用 DataLoader 加载数据集，增加 batch_size 和 num_workers
     
     dataloader = DataLoader(dataset, batch_size=2, num_workers=8, drop_last=False,collate_fn=error_avoidance_collate)
 
     print(f"Dataset length: {len(dataset)}")
     feature_extractor = FeaturesUtils(
-        vae_ckpt=args.vae_ckpt,
+        vae_ckpt=None,
         vae_config=args.vae_config,
         enable_conditions=True,
         synchformer_ckpt=args.synchformer_ckpt
     ).eval().cuda()
 
-    # 使用 DistributedDataParallel 支持多显卡
     feature_extractor = feature_extractor
 
-    # 使用 tqdm 显示进度条
     for i, data in enumerate(tqdm(dataloader, desc="Processing", unit="batch")):
-        # 使用 torch.no_grad() 来加快推理速度
         ids = data['id']  # 获取当前批次的所有 ID
         with torch.no_grad():
             # audio = data['audio'].cuda(rank, non_blocking=True)
@@ -90,8 +85,6 @@ def main(args):
             t5_features = feature_extractor.encode_t5_text(caption_cot)
             output['t5_features'] = t5_features.detach().cpu()
 
-
-            # 保存每个样本的输出
             for j in range(len(ids)):
                 sample_output = {
                     'id': ids[j],
@@ -133,15 +126,17 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args.audio_samples = int(args.sample_rate * args.duration_sec)
 
-    args.vae_ckpt = hf_hub_download(
-        repo_id="liuhuadai/ThinkSound",
-        filename="vae.ckpt"
-    )
+    # args.vae_ckpt = hf_hub_download(
+    #     repo_id="liuhuadai/ThinkSound",
+    #     filename="vae.ckpt"
+    # )
+    args.vae_ckpt = "./ckpts/vae.ckpt"
 
-    args.synchformer_ckpt = hf_hub_download(
-        repo_id="liuhuadai/ThinkSound",
-        filename="synchformer_state_dict.pth"
-    )
+    # args.synchformer_ckpt = hf_hub_download(
+    #     repo_id="liuhuadai/ThinkSound",
+    #     filename="synchformer_state_dict.pth"
+    # )
+    args.synchformer_ckpt = "./ckpts/synchformer_state_dict.pth"
 
     main(args=args)
 
