@@ -84,7 +84,7 @@ chmod +x scripts/demo.sh
 
 **Run the script**
 ```bash
-./scripts/demo.sh <video_path> <title> <CoT description>
+./scripts/demo.sh <video_path> <caption> <CoT description>
 ```
 
 
