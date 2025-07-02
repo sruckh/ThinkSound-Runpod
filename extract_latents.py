@@ -124,7 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('--save-dir', type=str, default='results', help='Save Directory')
     parser.add_argument('--sample_rate', type=int, default=44100, help='Sample rate of the audio')
     parser.add_argument('--duration_sec', type=float, default=9.0, help='Duration of the audio in seconds')
-    parser.add_argument('--vae_ckpt', type=str, default='ckpts/epoch=3-step=100000.ckpt', help='Path to the VAE checkpoint')
+    parser.add_argument('--vae_ckpt', type=str, default='ckpts/vae.ckpt', help='Path to the VAE checkpoint')
     parser.add_argument('--vae_config', type=str, default='ThinkSound/configs/model_configs/stable_audio_2_0_vae.json', help='Path to the VAE configuration file')
     parser.add_argument('--synchformer_ckpt', type=str, default='ckpts/synchformer_state_dict.pth', help='Path to the Synchformer checkpoint')
     parser.add_argument('--start-row', type=int, default=0, help='start row')
@@ -132,16 +132,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     args.audio_samples = int(args.sample_rate * args.duration_sec)
-
-    args.vae_ckpt = hf_hub_download(
-        repo_id="liuhuadai/ThinkSound",
-        filename="vae.ckpt"
-    )
-
-    args.synchformer_ckpt = hf_hub_download(
-        repo_id="liuhuadai/ThinkSound",
-        filename="synchformer_state_dict.pth"
-    )
 
     main(args=args)
 
