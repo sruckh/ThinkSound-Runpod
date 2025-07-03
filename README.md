@@ -1,38 +1,14 @@
-
-<div align="right">
-  <details>
-    <summary >🌐 Language</summary>
-    <div>
-      <div align="right">
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=en">English</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=zh-CN">简体中文</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=zh-TW">繁體中文</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=ja">日本語</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=ko">한국어</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=hi">हिन्दी</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=th">ไทย</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=fr">Français</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=de">Deutsch</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=es">Español</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=it">Itapano</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=ru">Русский</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=pt">Português</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=nl">Nederlands</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=pl">Polski</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=ar">العربية</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=fa">فارسی</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=tr">Türkçe</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=vi">Tiếng Việt</a></p>
-        <p><a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=id">Bahasa Indonesia</a></p>
-      </div>
-    </div>
-  </details>
-</div>
-
-# 🎶 ThinkSound
+<h1 align="center">ThinkSound</h1>
 
 <p align="center">
-  If you find this project useful, a star ⭐ on GitHub would be greatly appreciated!
+  🌐
+  <a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=en">English</a> |
+  <a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=zh-CN">简体中文</a> |
+  <a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=zh-TW">繁體中文</a> |
+  <a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=es">Español</a> |
+  <a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=fr">Français</a> |
+  <a href="https://openaitx.github.io/view.html?user=FunAudioLLM&project=ThinkSound&lang=ja">日本語</a>
+  
 </p>
 
 <p align="center">
@@ -51,6 +27,11 @@
   <a href="https://modelscope.cn/studios/iic/ThinkSound">
     <img src="https://img.shields.io/badge/ModelScope-在线体验-green" alt="ModelScope"/>
   </a>
+</p>
+
+<p align="center">
+  If you find this project useful,<br>
+  a star ⭐ on GitHub would be greatly appreciated!
 </p>
 
 ---
