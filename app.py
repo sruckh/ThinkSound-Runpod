@@ -72,6 +72,10 @@ def combine_audio_video(video_path, audio_path, output_path):
 
 def generate_audio(video, title, description, use_half):
     print("start")
+    if not title:
+        title = " "
+    if not description:
+        description = " "
     if title.isdigit() or description.isdigit():
         yield "❌ 错误：标题和描述不能完全由数字构成。", None
         return
@@ -154,7 +158,7 @@ demo = gr.Interface(
         gr.Video(label="Upload Video"),
         gr.Textbox(label="Caption (optional)", optional=True),
         gr.Textbox(label="CoT Description (optional)", lines=6, optional=True),
-        gr.Checkbox(label="Use Half Precision", value=True),
+        gr.Checkbox(label="Use Half Precision", value=False),
     ],
     outputs=[
         gr.Textbox(label="Status"),
