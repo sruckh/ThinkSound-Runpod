@@ -6,7 +6,7 @@ from einops import rearrange
 from torch import nn
 from torch.nn import functional as F
 from x_transformers import ContinuousTransformerWrapper, Encoder
-from .mmmodules.model.low_level import MLP, ChannelLastConv1d, ConvMLP
+#from .mmmodules.model.low_level import MLP, ChannelLastConv1d, ConvMLP
 from .blocks import FourierFeatures
 from .transformer import ContinuousTransformer
 from .utils import mask_from_frac_lengths, resample

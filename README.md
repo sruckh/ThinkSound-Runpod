@@ -96,8 +96,10 @@ chmod +x scripts/demo.sh
 
 **Run the script**
 ```bash
-./scripts/demo.sh <video_path> <caption> <CoT description>
+./scripts/demo.sh <video_path> <title> <CoT description> [use-half]
 ```
+Add use-half at the end to enable half precision inference, which reduces GPU memory usage.
+
 
 
 ### Web Interface Usage

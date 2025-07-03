@@ -1,14 +1,15 @@
 #!/bin/bash
 
 # Check number of arguments
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <video_path> <title> <description>"
+if [ "$#" -lt 3 ] || [ "$#" -gt 4 ]; then
+    echo "Usage: $0 <video_path> <title> <description> [use-half]"
     exit 1
 fi
 
 VIDEO_PATH="$1"
 TITLE="$2"
 DESCRIPTION="$3"
+USE_HALF_FLAG="$4"
 
 # Generate unique ID
 UNIQUE_ID=$(uuidgen | cut -c 1-8)
@@ -47,7 +48,12 @@ echo "${VIDEO_ID}_${UNIQUE_ID},$TITLE,\"$CAPTION_COT\"" >> "$CSV_PATH"
 
 # Run feature extraction
 echo "⏳ Extracting features..."
-python extract_latents.py --duration_sec "$DURATION_SEC" 2>&1
+EXTRACT_CMD=("python" "extract_latents.py" "--duration_sec" "$DURATION_SEC")
+if [ "$USE_HALF_FLAG" = "use-half" ]; then
+    EXTRACT_CMD+=("--use_half")
+fi
+
+"${EXTRACT_CMD[@]}" 2>&1
 if [ $? -ne 0 ]; then
     echo "❌ Feature extraction failed"
     rm -f "$TEMP_VIDEO_PATH"

@@ -1,7 +1,7 @@
 import torch
 from safetensors.torch import load_file
 from torch import nn, Tensor, einsum, IntTensor, FloatTensor, BoolTensor
-from torchcubicspline import natural_cubic_spline_coeffs, NaturalCubicSpline
+#from torchcubicspline import natural_cubic_spline_coeffs, NaturalCubicSpline
 from torch.nn.utils import remove_weight_norm
 
 def load_ckpt_state_dict(ckpt_path, prefix=None):
