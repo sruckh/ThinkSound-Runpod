@@ -9,12 +9,18 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
-def run_infer(stage, duration_sec,videos_dir,csv_path,results_dir, cwd):
+def run_infer(stage, duration_sec, videos_dir, csv_path, results_dir, cwd, use_half=False):
     cmd = (
-        ["python", "extract_latents.py", "--duration_sec", str(duration_sec),"--root", videos_dir, "--tsv_path", csv_path, "--save-dir", results_dir]
-        if stage == 1
-        else ["bash", "scripts/infer.sh", "--duration-sec", str(duration_sec),"--result-path", results_dir]
+        ["python", "extract_latents.py", "--duration_sec", str(duration_sec),
+         "--root", videos_dir, "--tsv_path", csv_path, "--save-dir", results_dir]
+        if stage == 1 else
+        ["bash", "scripts/infer.sh", "--duration-sec", str(duration_sec),
+         "--result-path", results_dir]
     )
+
+    if stage == 1 and use_half:
+        cmd.append("--use_half")
+
     process = subprocess.Popen(
         cmd,
         cwd=cwd,
@@ -64,8 +70,12 @@ def combine_audio_video(video_path, audio_path, output_path):
     )
     return result.returncode == 0, result.stderr
 
-def generate_audio(video, title, description):
+def generate_audio(video, title, description, use_half):
     print("start")
+    if not title:
+        title = " "
+    if not description:
+        description = " "
     if title.isdigit() or description.isdigit():
         yield "❌ 错误：标题和描述不能完全由数字构成。", None
         return
@@ -110,7 +120,7 @@ def generate_audio(video, title, description):
 
     # 6. 特征提取
     yield "⏳ Extracting Features…", None
-    code, out = run_infer(stage=1, duration_sec=duration_sec,videos_dir=videos_dir,csv_path=csv_path,results_dir=results_dir, cwd=project_root)
+    code, out = run_infer(stage=1, duration_sec=duration_sec,videos_dir=videos_dir,csv_path=csv_path,results_dir=results_dir, cwd=project_root, use_half=use_half)
     if code != 0:
         yield "❌ Extracting Features Failed", out
         return
@@ -146,8 +156,9 @@ demo = gr.Interface(
     fn=generate_audio,
     inputs=[
         gr.Video(label="Upload Video"),
-        gr.Textbox(label="Caption"),
-        gr.Textbox(label="CoT Description", lines=6),
+        gr.Textbox(label="Caption (optional)", optional=True),
+        gr.Textbox(label="CoT Description (optional)", lines=6, optional=True),
+        gr.Checkbox(label="Use Half Precision", value=False),
     ],
     outputs=[
         gr.Textbox(label="Status"),
