@@ -51,6 +51,17 @@ PyTorch implementation for multimodal audio generation and editing: generate or 
 
 ---
 
+
+## 📢 项目可见性说明（Clarification on Project Accessibility）
+
+近期由于公司合规审查，项目仓库曾短暂由 Public 调整为 Private（大约 2 小时左右不可访问）。  
+目前项目已经通过公司合规审查并已经已恢复公开，并**承诺不会再设置为 Private** —— 欢迎放心关注、使用和贡献！
+
+This repository was temporarily switched from public to private for about 2 hours due to a compliance review required by our company.  
+Now we finished the internal review process and the repository is public again. **We guarantee that the repository will remain public in the future**. Thank you for your understanding and support!
+
+---
+
 ## 🚀 Features
 
 - **Any2Audio**: Generate audio from arbitrary modalities — video, text, audio, or their combinations.
