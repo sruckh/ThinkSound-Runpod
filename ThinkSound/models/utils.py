@@ -162,3 +162,39 @@ def resample(video_feat, audio_latent):
     # 三次样条插值
     aligned_video = _build_spline(video_feat, video_time, audio_time)  # [B, D, Ta]
     return aligned_video.permute(0, 2, 1)  # [B, Ta, D]
+
+
+def copy_state_dict(model, state_dict):
+    """Load state_dict to model, but only for keys that match exactly.
+
+    Args:
+        model (nn.Module): model to load state_dict.
+        state_dict (OrderedDict): state_dict to load.
+    """
+    model_state_dict = model.state_dict()
+
+    # 创建一个列表存储不匹配的参数
+    missing_keys = []
+    unexpected_keys = []
+    # 手动加载并检查不匹配的参数
+    for key in state_dict:
+        if key not in model_state_dict:
+            unexpected_keys.append(key)
+        elif state_dict[key].shape != model_state_dict[key].shape:
+            unexpected_keys.append(key)
+
+    for key in model_state_dict:
+        if key not in state_dict:
+            missing_keys.append(key)
+
+    # 打印不匹配的参数
+    print("Missing keys in state_dict:", missing_keys)
+    print("Unexpected keys in state_dict:", unexpected_keys)
+    for key in state_dict:
+        if key in model_state_dict and state_dict[key].shape == model_state_dict[key].shape:
+            if isinstance(state_dict[key], torch.nn.Parameter):
+                # backwards compatibility for serialized parameters
+                state_dict[key] = state_dict[key].data
+            model_state_dict[key] = state_dict[key]
+        
+    model.load_state_dict(model_state_dict, strict=False)

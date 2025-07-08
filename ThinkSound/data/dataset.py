@@ -485,8 +485,15 @@ class VideoDataset(torch.utils.data.Dataset):
             self.root_paths.append(config.path)
             def add_prefix(s):
                 return str(os.path.join(config.path,f'{s.strip()}'))
-            with open(config.split_path,'r') as f:
-                item_names = f.readlines()
+            if config.split_path and os.path.exists(config.split_path):
+                with open(config.split_path, 'r') as f:
+                    item_names = [line.strip() for line in f if line.strip()]
+            else:
+                item_names = [
+                    os.path.splitext(f)[0]+".npz"
+                    for f in os.listdir(config.path)
+                    if os.path.isfile(os.path.join(config.path, f))
+                ]
             filenames = list(map(add_prefix, item_names))
             self.filenames.extend(filenames) 
             # self.filenames.extend(get_audio_filenames(config.path, keywords))

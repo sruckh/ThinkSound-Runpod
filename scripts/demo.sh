@@ -11,6 +11,8 @@ TITLE="$2"
 DESCRIPTION="$3"
 USE_HALF_FLAG="$4"
 
+model_config="ThinkSound/configs/model_configs/thinksound.json"
+
 # Generate unique ID
 UNIQUE_ID=$(uuidgen | cut -c 1-8)
 
@@ -21,7 +23,7 @@ mkdir -p videos cot_coarse results
 VIDEO_FILE=$(basename "$VIDEO_PATH")
 VIDEO_EXT="${VIDEO_FILE##*.}"
 VIDEO_ID="${VIDEO_FILE%.*}"
-TEMP_VIDEO_PATH="videos/${VIDEO_ID}_${UNIQUE_ID}.mp4"
+TEMP_VIDEO_PATH="videos/demo.mp4"
 
 # Convert video to MP4 format if needed
 if [ "${VIDEO_EXT,,}" != "mp4" ]; then
@@ -44,7 +46,7 @@ echo "Duration is: $DURATION_SEC"
 CAPTION_COT=$(echo "$DESCRIPTION" | tr '"' "'")
 CSV_PATH="cot_coarse/cot.csv"
 echo "id,caption,caption_cot" > "$CSV_PATH"
-echo "${VIDEO_ID}_${UNIQUE_ID},$TITLE,\"$CAPTION_COT\"" >> "$CSV_PATH"
+echo "demo,$TITLE,\"$CAPTION_COT\"" >> "$CSV_PATH"
 
 # Run feature extraction
 echo "⏳ Extracting features..."
@@ -62,7 +64,11 @@ fi
 
 # Run inference
 echo "⏳ Running model inference..."
-bash scripts/infer.sh --duration-sec "$DURATION_SEC" 2>&1
+python predict.py \
+    --model-config "$model_config" \
+    --duration-sec "$DURATION_SEC" \
+    --results-dir "results"\
+
 if [ $? -ne 0 ]; then
     echo "❌ Inference failed"
     rm -f "$TEMP_VIDEO_PATH"

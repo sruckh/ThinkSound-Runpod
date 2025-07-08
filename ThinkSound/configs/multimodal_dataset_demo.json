@@ -44,8 +44,7 @@
     "test_datasets": [
         {
             "id": "vggsound",
-            "path": "cot_coarse",
-            "split_path": "cot_vgg_demo_caption.txt"
+            "path": "cot_coarse"
         }
     ],
     "random_crop": true,

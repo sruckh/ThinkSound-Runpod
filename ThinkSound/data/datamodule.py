@@ -124,6 +124,7 @@ class DataModule(L.LightningDataModule):
         
 
     def setup(self, stage: str):
+
         if self.dataset_type == 'audio_dir':
             dataset_class = SampleDataset
         elif self.dataset_type == 'latent_dir':

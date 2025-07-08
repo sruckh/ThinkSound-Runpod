@@ -24,7 +24,7 @@ class PreprocessedConditions:
     text_f_c: torch.Tensor
 
 
-class MMAudio(nn.Module):
+class MMmodule(nn.Module):
 
     def __init__(self,
                  *,

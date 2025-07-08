@@ -51,7 +51,7 @@ def main(args):
     # DataLoader
     dataloader = DataLoader(
         dataset,
-        batch_size=1,
+        batch_size=2,
         num_workers=2,
         pin_memory=False,
         drop_last=False,
@@ -61,23 +61,28 @@ def main(args):
     # Lazy feature extractor
     class FeaturesUtils(OriginalFeatures):
         def __init__(self, *a,use_half=True, **kw):
-            super().__init__(*a, **kw)
+
+            _prev_device = torch.device("cpu")
+
+            try:
+                torch.set_default_device("cuda")
+                super().__init__(*a, **kw)
+            finally:
+                torch.set_default_device(_prev_device)
+            
+            
             self.use_half = use_half
             if self.use_half:
                 logging.info("Using half precision for models to save memory")
             # initially offload heavy modules
             if self.clip_model is not None:
-                self.clip_model.to('cpu')
-                if self.use_half:
-                    self.clip_model = self.clip_model.half()
+                self.clip_model = self._load_to_cuda(self.clip_model)
+
             if hasattr(self, 't5_model') and self.t5_model is not None:
-                self.t5_model.to('cpu')
-                if self.use_half:
-                    self.t5_model = self.t5_model.half()
+                self.t5_model = self._load_to_cuda(self.t5_model)
+
             if self.synchformer is not None:
-                self.synchformer.to('cpu')
-                if self.use_half:
-                    self.synchformer = self.synchformer.half()
+                self.synchformer = self._load_to_cuda(self.synchformer)
             #print_gpu("models_offloaded")
 
         def _load_to_cuda(self, model):
@@ -87,47 +92,44 @@ def main(args):
 
         @torch.inference_mode()
         def encode_video_with_clip(self, x, batch_size=-1):
-            # load and offload
-            model = self._load_to_cuda(self.clip_model)
             out = super().encode_video_with_clip(x.to('cuda'), batch_size)
-            model.to('cpu')
             torch.cuda.empty_cache()
             #print_gpu("after_clip")
             return out
 
         @torch.inference_mode()
         def encode_video_with_sync(self, x, batch_size=-1):
-            model = self._load_to_cuda(self.synchformer)
             x = x.to('cuda')
             if self.use_half:
                 x = x.half()
             out = super().encode_video_with_sync(x, batch_size)
-            model.to('cpu')
             torch.cuda.empty_cache()
             #print_gpu("after_sync")
             return out
 
         @torch.inference_mode()
         def encode_text(self, text_list):
-            model = self._load_to_cuda(self.clip_model)
             out = super().encode_text(text_list)
-            model.to('cpu')
             torch.cuda.empty_cache()
             #print_gpu("after_text")
             return out
 
         @torch.inference_mode()
-        def encode_t5_text(self, text_list):
-            tokenizer = self.t5_tokenizer
-            # load t5
-            model = self._load_to_cuda(self.t5_model)
-            inputs = tokenizer(text_list, truncation=True, max_length=77,
-                               padding='max_length', return_tensors='pt').to('cuda')
-            out = model(**inputs).last_hidden_state.cpu()
-            model.to('cpu')
-            torch.cuda.empty_cache()
-            #print_gpu("after_t5")
-            return out
+        def encode_t5_text(self, text: list[str]) -> torch.Tensor:
+            assert self.t5_model is not None, 'T5 model is not loaded'
+            assert self.t5_tokenizer is not None, 'T5 Tokenizer is not loaded'
+            # x: (B, L)
+            inputs = self.t5_tokenizer(text,
+                truncation=True,
+                max_length=77,
+                padding="max_length",
+                return_tensors="pt")
+            
+            inputs = {k: v.to('cuda') for k, v in inputs.items()}
+            
+            return self.t5_model(**inputs).last_hidden_state
+
+        
 
     # Initialize new extractor
     extractor = FeaturesUtils(
@@ -149,7 +151,7 @@ def main(args):
                 'caption': str(data['caption']),
                 'caption_cot': str(data['caption_cot'])
             }
-            print(output)
+
             # logging.info(f'Processing batch {i} with IDs: {ids}')  # 添加日志记录
 
             # latent = feature_extractor.module.encode_audio(audio)
@@ -191,7 +193,7 @@ def main(args):
                     if isinstance(v, torch.Tensor):
                         sample_output[k] = v.float().cpu().numpy()
                 # torch.save(sample_output, f'{save_dir}/{ids[j]}.pth')
-                np.savez(f'{args.save_dir}/demo.npz', **sample_output)
+                np.savez(f'{args.save_dir}/{ids[j]}.npz', **sample_output)
 
     #print_gpu("finished")
 

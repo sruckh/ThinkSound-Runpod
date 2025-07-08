@@ -14,8 +14,8 @@ def run_infer(stage, duration_sec, videos_dir, csv_path, results_dir, cwd, use_h
         ["python", "extract_latents.py", "--duration_sec", str(duration_sec),
          "--root", videos_dir, "--tsv_path", csv_path, "--save-dir", results_dir]
         if stage == 1 else
-        ["bash", "scripts/infer.sh", "--duration-sec", str(duration_sec),
-         "--result-path", results_dir]
+        ["python", "predict.py", "--duration-sec", str(duration_sec),
+         "--results-dir", results_dir]
     )
 
     if stage == 1 and use_half:
@@ -80,8 +80,9 @@ def generate_audio(video, title, description, use_half):
         yield "❌ 错误：标题和描述不能完全由数字构成。", None
         return
 
-    # 1. 创建临时工作目录
-    session_dir = tempfile.mkdtemp(prefix="thinksound_")
+    unique_id = uuid.uuid4().hex[:8]
+
+    session_dir = tempfile.mkdtemp(prefix="thinksound_"+unique_id)
     videos_dir  = os.path.join(session_dir, "videos")
     cot_dir     = os.path.join(session_dir, "cot_coarse")
     results_dir = os.path.join(session_dir, "results", "audios")
@@ -90,11 +91,11 @@ def generate_audio(video, title, description, use_half):
     os.makedirs(cot_dir,     exist_ok=True)
     os.makedirs(results_dir, exist_ok=True)
 
-    unique_id = uuid.uuid4().hex[:8]
+    
     orig_path = video
     ext = os.path.splitext(orig_path)[1].lower()
     vid = os.path.splitext(os.path.basename(orig_path))[0]
-    temp_mp4 = os.path.join(videos_dir, f"{vid}_{unique_id}.mp4")
+    temp_mp4 = os.path.join(videos_dir, f"demo.mp4")
 
     if ext != ".mp4":
         ok, err = convert_to_mp4(orig_path, temp_mp4)
@@ -116,7 +117,7 @@ def generate_audio(video, title, description, use_half):
     caption_cot = description.replace('"', "'")
     with open(csv_path, "w", encoding="utf-8") as f:
         f.write("id,caption,caption_cot\n")
-        f.write(f"{vid}_{unique_id},{title},\"{caption_cot}\"\n")
+        f.write(f"demo,{title},\"{caption_cot}\"\n")
 
     # 6. 特征提取
     yield "⏳ Extracting Features…", None

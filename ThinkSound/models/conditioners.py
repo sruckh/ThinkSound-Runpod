@@ -10,7 +10,7 @@ import os
 from ..inference.utils import set_audio_channels
 from .factory import create_pretransform_from_config
 from .pretransforms import Pretransform
-from ..training.utils import copy_state_dict
+from .utils import copy_state_dict
 from .utils import load_ckpt_state_dict
 import numpy as np
 from einops import rearrange

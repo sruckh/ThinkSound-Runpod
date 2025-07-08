@@ -44,13 +44,14 @@ PyTorch implementation for multimodal audio generation and editing: generate or 
 ---
 
 ## 📰 News
+- **2025.07** &nbsp;  🔧 Major update: model lightweighted and optimized memory and GPU usage, now supports high-throughput audio generation at scale!
 - **2025.07** &nbsp; 🔥Online demo on [Hugging Face Spaces](https://huggingface.co/spaces/FunAudioLLM/ThinkSound) and [ModelScope](https://modelscope.cn/studios/iic/ThinkSound) for interactive experience!
 - **2025.07** &nbsp; 🔥Released inference scripts and web interface; 
 - **2025.06** &nbsp; 🔥[ThinkSound paper](https://arxiv.org/pdf/2506.21448) released on arXiv!
 - **2025.06** &nbsp; 🔥[Online Demo](http://thinksound-project.github.io/) is live - try it now!
 
-
 ---
+
 
 ## 🚀 Features
 
@@ -101,6 +102,25 @@ chmod +x scripts/demo.sh
 ```
 Add use-half at the end to enable half precision inference, which reduces GPU memory usage.
 
+Use the `eval_batch.sh` script to extract features from a batch of videos and run inference to generate audio outputs.
+
+```bash
+chmod +x scripts/eval_batch.sh
+./scripts/eval_batch.sh <video_path> <csv_path> <save_path (optional)> [use-half]
+```
+
+`<video_path>`:Path to the root directory containing video files.
+  * **Requirement**: All videos should be in `.mp4` format.
+  * **Assumption**: All videos have **equal duration**.
+
+`<csv_path>`:Path to the CSV file containing text descriptions (e.g., captions, CoT prompts) for each video.
+  * Format should be similar to `demo_test.csv`, where each row corresponds to a video and includes at least the filename (without extension) and associated text.
+
+`<save_path>` (optional):
+  Directory where the generated audios will be saved.
+  * Defaults to `results/features` if not provided.
+
+`[use-half]` (optional):
 
 
 ### Web Interface Usage
