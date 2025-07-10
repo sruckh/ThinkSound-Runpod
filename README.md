@@ -134,12 +134,11 @@ python app.py
 ---
 
 ## 📝 TODO
-
-- ☐ Release training scripts for ThinkSound models
-- ☐ Open-source AudioCoT dataset and automated pipeline
-- ☐ Provide detailed documentation and API reference
-- ☐ Add support for additional modalities and downstream tasks
-
+* - [ ] Release training scripts for ThinkSound models
+* - [ ] Open-source AudioCoT dataset and automated pipeline
+* - [ ] Provide detailed documentation and API reference
+* - [ ] Add support for additional modalities and downstream tasks
+* - [ ] Release models at different scales
 ---
 
 ## 📄 License
