@@ -20,7 +20,9 @@ if [ ! -d "ckpts" ]; then
 fi
 
 # Install thinksound in editable mode
+cd /app
 pip install -e .
 
 # Start the Gradio app
-python app.py
+cd /app
+python3 app.py
