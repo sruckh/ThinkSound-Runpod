@@ -1,5 +1,6 @@
 import gradio as gr
 import os
+import os
 import subprocess
 import shutil
 import uuid
@@ -170,4 +171,8 @@ demo = gr.Interface(
 )
 
 if __name__ == "__main__":
-    demo.queue().launch()
+    share = os.getenv("GRADIO_SHARE", "false").lower() == "true"
+    hf_token = os.getenv("HF_TOKEN", "")
+    if hf_token:
+        os.environ["HF_TOKEN"] = hf_token
+    demo.queue().launch(server_name="0.0.0.0", server_port=7860, share=share)
