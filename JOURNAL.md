@@ -1,47 +1,51 @@
 # Engineering Journal
 
-## 2025-07-20 04:34
+## 2025-07-21 19:46
 
-### Documentation Framework Implementation
-- **What**: Implemented Claude Conductor modular documentation system
-- **Why**: Improve AI navigation and code maintainability
-- **How**: Used `npx claude-conductor` to initialize framework
-- **Issues**: None - clean implementation
-- **Result**: Documentation framework successfully initialized
+### Flash Attention Compatibility Resolution - Final Implementation
+- **What**: Completed comprehensive flash attention compatibility fix for containerized deployment
+- **Why**: Resolved critical "undefined symbol" errors preventing application startup
+- **How**: 
+  - Disabled flash attention via TRANSFORMERS_NO_FLASH_ATTENTION=1
+  - Updated requirements to transformers 4.36.2 for compatibility
+  - Created comprehensive fix utilities (apply_fixes.py, deploy_with_fix.sh)
+  - Added proper error handling for missing flash attention
+  - Updated container startup scripts for robust deployment
+- **Issues**: flash_attn library incompatible with PyTorch 2.6 + CUDA 12.6 ABI
+- **Result**: Application now starts successfully with CPU fallback, all features functional
 
-## 2025-07-20 13:47
+### Container Environment Optimization
+- **What**: Enhanced container deployment for RunPod GPU services
+- **Why**: Ensure consistent behavior across containerized environments
+- **How**:
+  - Updated startup scripts with proper working directory handling
+  - Added environment variable configuration for flash attention
+  - Created requirements_fixed.txt with tested version matrix
+  - Implemented robust file path handling for container filesystem
+- **Issues**: Container filesystem structure differs from local development
+- **Result**: Fully containerized deployment ready for production use
 
-### Docker Container Startup Fix
-- **What**: Fixed startup.sh script causing container initialization failures
-- **Why**: Container was erroring out with "command on line 26 does not exist"
-- **How**: Updated startup.sh to ensure correct working directory (/app) and use python3 interpreter
-- **Issues**: Working directory mismatch between Dockerfile WORKDIR (/app) and file locations
-- **Result**: Updated startup.sh to add `cd /app` before pip install and app launch commands, changed `python app.py` to `python3 app.py`
+### Documentation Framework Updates
+- **What**: Updated TASKS.md and JOURNAL.md per CONDUCTOR.md standards
+- **Why**: Maintain comprehensive project documentation and task tracking
+- **How**:
+  - Added TASK-2025-07-21-001 with complete context and findings
+  - Documented all technical decisions and blockers
+  - Created task chain for flash attention resolution
+  - Added comprehensive journal entry for final implementation
+- **Issues**: None - clean documentation update
+- **Result**: Complete task documentation aligned with Claude Conductor standards
 
-## 2025-07-21 05:20
-
-### FileNotFoundError Fix in Gradio Interface |ERROR:ERR-2025-07-21-001|
-- **What**: Fixed subprocess Python executable path causing inference failures
-- **Why**: Gradio interface was failing with "FileNotFoundError: [Errno 2] No such file or directory: 'python'" when clicking submit
-- **How**: Replaced hardcoded "python" with `sys.executable` in subprocess calls within `run_infer()` function
-- **Issues**: Container environment uses different Python executable naming conventions
-- **Result**: Modified `app.py` lines 15 and 18 to use `sys.executable` instead of "python", ensuring compatibility across container environments
-
-### Gradio Interface Validation
-- **What**: Verified Gradio interface aligns with README.md CLI instructions
-- **Why**: Ensure web interface provides equivalent functionality to command-line tools
-- **How**: Compared parameter mapping between CLI scripts and Gradio inputs
-- **Issues**: None - perfect alignment found
-- **Result**: Gradio interface correctly implements all CLI functionality with improved user experience
-
-## 2025-07-21 07:18
-
-### Flash-Attention Installation Order Fix
-- **What**: Fixed flash_attn installation sequence in startup.sh
-- **Why**: flash_attn was being installed before pip install -e ., causing potential conflicts or removal by other dependencies
-- **How**: Moved flash_attn installation command to occur after pip install -e . in startup.sh
-- **Issues**: flash_attn appeared to download but never properly install due to dependency conflicts
-- **Result**: flash_attn now installs as final step, ensuring it remains properly installed and functional
+### Deployment Verification
+- **What**: Validated all fixes work correctly in containerized environment
+- **Why**: Ensure production readiness after major compatibility changes
+- **How**:
+  - Tested startup sequence with new scripts
+  - Validated Gradio interface functionality end-to-end
+  - Confirmed audio generation pipeline works with CPU fallback
+  - Verified container deployment scenarios
+- **Issues**: None - all tests passed successfully
+- **Result**: Application fully functional with comprehensive fix toolkit
 
 ## 2025-07-21 17:26
 
@@ -98,7 +102,6 @@
 - **Issues**: None - all tests passed successfully
 - **Result**: Application fully functional with all fixes applied
 
----
 ## 2025-07-21 17:34
 
 ### Import Resolution for Containerized Environment |TASK:TASK-2025-07-21-004|
@@ -127,3 +130,46 @@
 ### Next Steps
 - Continue monitoring container deployment for any runtime issues
 - Document container-specific configuration for future reference
+
+## 2025-07-21 07:18
+
+### Flash-Attention Installation Order Fix
+- **What**: Fixed flash_attn installation sequence in startup.sh
+- **Why**: flash_attn was being installed before pip install -e ., causing potential conflicts or removal by other dependencies
+- **How**: Moved flash_attn installation command to occur after pip install -e . in startup.sh
+- **Issues**: flash_attn appeared to download but never properly install due to dependency conflicts
+- **Result**: flash_attn now installs as final step, ensuring it remains properly installed and functional
+
+## 2025-07-21 05:20
+
+### FileNotFoundError Fix in Gradio Interface |ERROR:ERR-2025-07-21-001|
+- **What**: Fixed subprocess Python executable path causing inference failures
+- **Why**: Gradio interface was failing with "FileNotFoundError: [Errno 2] No such file or directory: 'python'" when clicking submit
+- **How**: Replaced hardcoded "python" with `sys.executable` in subprocess calls within `run_infer()` function
+- **Issues**: Container environment uses different Python executable naming conventions
+- **Result**: Modified `app.py` lines 15 and 18 to use `sys.executable` instead of "python", ensuring compatibility across container environments
+
+### Gradio Interface Validation
+- **What**: Verified Gradio interface aligns with README.md CLI instructions
+- **Why**: Ensure web interface provides equivalent functionality to command-line tools
+- **How**: Compared parameter mapping between CLI scripts and Gradio inputs
+- **Issues**: None - perfect alignment found
+- **Result**: Gradio interface correctly implements all CLI functionality with improved user experience
+
+## 2025-07-20 13:47
+
+### Docker Container Startup Fix
+- **What**: Fixed startup.sh script causing container initialization failures
+- **Why**: Container was erroring out with "command on line 26 does not exist"
+- **How**: Updated startup.sh to ensure correct working directory (/app) and use python3 interpreter
+- **Issues**: Working directory mismatch between Dockerfile WORKDIR (/app) and file locations
+- **Result**: Updated startup.sh to add `cd /app` before pip install and app launch commands, changed `python app.py` to `python3 app.py`
+
+## 2025-07-20 04:34
+
+### Documentation Framework Implementation
+- **What**: Implemented Claude Conductor modular documentation system
+- **Why**: Improve AI navigation and code maintainability
+- **How**: Used `npx claude-conductor` to initialize framework
+- **Issues**: None - clean implementation
+- **Result**: Documentation framework successfully initialized
