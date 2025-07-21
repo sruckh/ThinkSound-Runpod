@@ -19,12 +19,12 @@ if [ ! -d "ckpts" ]; then
     fi
 fi
 
-# Install compatible flash-attention for PyTorch 2.6
-pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.1.post4/flash_attn-2.7.1.post4+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
-
 # Install thinksound in editable mode
 cd /app
 pip install -e .
+
+# Install compatible flash-attention for PyTorch 2.6 (after all other dependencies)
+pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.1.post4/flash_attn-2.7.1.post4+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
 
 # Start the Gradio app
 cd /app

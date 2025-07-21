@@ -34,4 +34,13 @@
 - **Issues**: None - perfect alignment found
 - **Result**: Gradio interface correctly implements all CLI functionality with improved user experience
 
+## 2025-07-21 07:18
+
+### Flash-Attention Installation Order Fix
+- **What**: Fixed flash_attn installation sequence in startup.sh
+- **Why**: flash_attn was being installed before pip install -e ., causing potential conflicts or removal by other dependencies
+- **How**: Moved flash_attn installation command to occur after pip install -e . in startup.sh
+- **Issues**: flash_attn appeared to download but never properly install due to dependency conflicts
+- **Result**: flash_attn now installs as final step, ensuring it remains properly installed and functional
+
 ---
