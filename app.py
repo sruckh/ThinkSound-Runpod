@@ -137,9 +137,36 @@ def generate_audio(video, title, description, use_half):
     # 8. 找到生成的音频
     today = datetime.now().strftime("%m%d")
     audio_file = os.path.join(results_dir, f"{today}_batch_size1/demo.wav")
+    
+    # Handle potential file path issues with gradio
     if not os.path.exists(audio_file):
-        yield "❌ Generated audio not found", None
-        return
+        # Try alternative paths
+        alt_paths = [
+            os.path.join(results_dir, "demo.wav"),
+            os.path.join(results_dir, f"{today}_batch_size1", "demo.wav"),
+            os.path.join(results_dir, "audios", f"{today}_batch_size1", "demo.wav")
+        ]
+        
+        audio_file = None
+        for path in alt_paths:
+            if os.path.exists(path):
+                audio_file = path
+                break
+        
+        if audio_file is None:
+            # List what's actually in the directory for debugging
+            try:
+                import glob
+                found_files = glob.glob(os.path.join(results_dir, "**", "*.wav"), recursive=True)
+                if found_files:
+                    audio_file = found_files[0]
+                    print(f"Found audio file: {audio_file}")
+                else:
+                    yield f"❌ Generated audio not found. Directory contents: {os.listdir(results_dir)}", None
+                    return
+            except Exception as e:
+                yield f"❌ Error finding audio: {str(e)}", None
+                return
 
     # 9. 合成音视频
     combined_video = os.path.join(results_dir, f"{vid}_{unique_id}_with_audio.mp4")
