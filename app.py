@@ -12,10 +12,10 @@ from pathlib import Path
 
 def run_infer(stage, duration_sec, videos_dir, csv_path, results_dir, cwd, use_half=False):
     cmd = (
-        ["python", "extract_latents.py", "--duration_sec", str(duration_sec),
+        [sys.executable, "extract_latents.py", "--duration_sec", str(duration_sec),
          "--root", videos_dir, "--tsv_path", csv_path, "--save-dir", results_dir]
         if stage == 1 else
-        ["python", "predict.py", "--duration-sec", str(duration_sec),
+        [sys.executable, "predict.py", "--duration-sec", str(duration_sec),
          "--results-dir", results_dir]
     )
 
