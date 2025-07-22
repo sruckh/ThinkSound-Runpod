@@ -32,7 +32,7 @@ if [ -f "requirements_flash_attn.txt" ]; then
     pip install -r requirements_flash_attn.txt --no-cache-dir
 else
     echo "⚠️  Flash-attention requirements not found, installing flash-attn directly..."
-    pip install flash-attn==2.7.4.post1 --no-build-isolation --no-cache-dir
+    pip install flash-attn==2.8.0.post2 --no-build-isolation --no-cache-dir
 fi
 
 # Verify flash-attn installation
