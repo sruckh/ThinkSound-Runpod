@@ -8,7 +8,7 @@ torchaudio==2.6.0
 transformers==4.52.3  # Updated to latest compatible version
 
 # Flash attention - the main package we need to restore
-flash-attn==2.7.4.post1
+flash-attn==2.8.0.post2
 
 # Alternative attention mechanisms (keep as fallback)
 xformers==0.0.28.post3
