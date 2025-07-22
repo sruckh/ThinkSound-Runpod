@@ -1,0 +1,6 @@
+# Definitive requirements for flash attention compatibility
+# Use these versions to avoid ABI issues
+torch>=2.0.0,<2.6.0
+transformers==4.36.2
+# Skip flash-attn entirely to avoid compatibility issues
+# flash-attn>=2.3.0  # Commented out to prevent installation
