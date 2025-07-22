@@ -11,8 +11,12 @@ from data_utils.v2a_utils.feature_utils_224 import FeaturesUtils as OriginalFeat
 import numpy as np
 from huggingface_hub import hf_hub_download
 from torch.utils.data.dataloader import default_collate
-# Logging
+import time
+import gc
+
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def error_avoidance_collate(batch):
     batch = list(filter(lambda x: x is not None, batch))
@@ -20,22 +24,53 @@ def error_avoidance_collate(batch):
 
 # GPU memory print helper
 def print_gpu(stage=""):
-    alloc = torch.cuda.memory_allocated() / 1024**2
-    reserved = torch.cuda.memory_reserved() / 1024**2
-    logging.info(f"[{stage}] GPU Allocated: {alloc:.1f} MB, Reserved: {reserved:.1f} MB")
+    if torch.cuda.is_available():
+        alloc = torch.cuda.memory_allocated() / 1024**2
+        reserved = torch.cuda.memory_reserved() / 1024**2
+        logger.info(f"[{stage}] GPU Allocated: {alloc:.1f} MB, Reserved: {reserved:.1f} MB")
+    else:
+        logger.info(f"[{stage}] CUDA not available")
 
-# Distributed setup
-
-def setup(rank, world_size):
-    dist.init_process_group("nccl", rank=rank, world_size=world_size)
-    torch.cuda.set_device(rank)
-
-def cleanup():
-    dist.destroy_process_group()
+def warmup_models(extractor):
+    """Warm up models with dummy data to prevent hanging"""
+    logger.info("Warming up models...")
+    
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+        dtype = torch.float16 if extractor.use_half else torch.float32
+        
+        # Warm up CLIP
+        dummy_clip = torch.randn(1, 3, 224, 224, device=device, dtype=dtype)
+        _ = extractor.encode_video_with_clip(dummy_clip)
+        torch.cuda.empty_cache()
+        
+        # Warm up Synchformer
+        dummy_sync = torch.randn(1, 3, 16, 224, 224, device=device, dtype=dtype)
+        _ = extractor.encode_video_with_sync(dummy_sync)
+        torch.cuda.empty_cache()
+        
+        # Warm up text encoders
+        dummy_text = ["test caption"]
+        _ = extractor.encode_text(dummy_text)
+        _ = extractor.encode_t5_text(dummy_text)
+        torch.cuda.empty_cache()
+        
+        logger.info("✅ Models warmed up successfully")
+    else:
+        logger.info("⚠️  CUDA not available, skipping warmup")
 
 def main(args):
-    #print_gpu("startup")
+    logger.info("Starting extract_latents.py...")
+    logger.info(f"Arguments: {args}")
+    
+    # Check CUDA availability
+    if torch.cuda.is_available():
+        logger.info(f"CUDA available: {torch.cuda.get_device_name(0)}")
+    else:
+        logger.warning("CUDA not available, using CPU")
+    
     # Dataset
+    logger.info("Loading dataset...")
     dataset = VGGSound(
         root=args.root,
         tsv_path=args.tsv_path,
@@ -46,92 +81,27 @@ def main(args):
         end_row=args.end_row,
         save_dir=args.save_dir
     )
+    
+    if len(dataset) == 0:
+        logger.error("Dataset is empty! Check your TSV file and root directory.")
+        return
+    
+    logger.info(f"Dataset loaded with {len(dataset)} samples")
     os.makedirs(args.save_dir, exist_ok=True)
 
-    # DataLoader
+    # DataLoader with timeout to prevent hanging
     dataloader = DataLoader(
         dataset,
         batch_size=2,
-        num_workers=2,
+        num_workers=0,  # Use 0 to prevent multiprocessing issues
         pin_memory=False,
         drop_last=False,
-        collate_fn=error_avoidance_collate
+        collate_fn=error_avoidance_collate,
+        timeout=300  # 5 minute timeout
     )
 
-    # Lazy feature extractor
-    class FeaturesUtils(OriginalFeatures):
-        def __init__(self, *a,use_half=True, **kw):
-
-            _prev_device = torch.device("cpu")
-
-            try:
-                torch.set_default_device("cuda")
-                super().__init__(*a, **kw)
-            finally:
-                torch.set_default_device(_prev_device)
-            
-            
-            self.use_half = use_half
-            if self.use_half:
-                logging.info("Using half precision for models to save memory")
-            # initially offload heavy modules
-            if self.clip_model is not None:
-                self.clip_model = self._load_to_cuda(self.clip_model)
-
-            if hasattr(self, 't5_model') and self.t5_model is not None:
-                self.t5_model = self._load_to_cuda(self.t5_model)
-
-            if self.synchformer is not None:
-                self.synchformer = self._load_to_cuda(self.synchformer)
-            #print_gpu("models_offloaded")
-
-        def _load_to_cuda(self, model):
-            if self.use_half:
-                model = model.half()
-            return model.to('cuda')
-
-        @torch.inference_mode()
-        def encode_video_with_clip(self, x, batch_size=-1):
-            out = super().encode_video_with_clip(x.to('cuda'), batch_size)
-            torch.cuda.empty_cache()
-            #print_gpu("after_clip")
-            return out
-
-        @torch.inference_mode()
-        def encode_video_with_sync(self, x, batch_size=-1):
-            x = x.to('cuda')
-            if self.use_half:
-                x = x.half()
-            out = super().encode_video_with_sync(x, batch_size)
-            torch.cuda.empty_cache()
-            #print_gpu("after_sync")
-            return out
-
-        @torch.inference_mode()
-        def encode_text(self, text_list):
-            out = super().encode_text(text_list)
-            torch.cuda.empty_cache()
-            #print_gpu("after_text")
-            return out
-
-        @torch.inference_mode()
-        def encode_t5_text(self, text: list[str]) -> torch.Tensor:
-            assert self.t5_model is not None, 'T5 model is not loaded'
-            assert self.t5_tokenizer is not None, 'T5 Tokenizer is not loaded'
-            # x: (B, L)
-            inputs = self.t5_tokenizer(text,
-                truncation=True,
-                max_length=77,
-                padding="max_length",
-                return_tensors="pt")
-            
-            inputs = {k: v.to('cuda') for k, v in inputs.items()}
-            
-            return self.t5_model(**inputs).last_hidden_state
-
-        
-
-    # Initialize new extractor
+    # Initialize feature extractor
+    logger.info("Initializing feature extractor...")
     extractor = FeaturesUtils(
         vae_ckpt=None,
         vae_config=None,
@@ -139,63 +109,89 @@ def main(args):
         synchformer_ckpt=args.synchformer_ckpt,
         use_half=args.use_half
     )
+    
+    # Warm up models
+    warmup_models(extractor)
+    
+    logger.info("Starting processing...")
+    processed_count = 0
+    
+    try:
+        for i, data in enumerate(tqdm(dataloader, desc="Processing", unit="batch")):
+            ids = data['id']
+            
+            try:
+                with torch.no_grad():
+                    output = {
+                        'caption': str(data['caption']),
+                        'caption_cot': str(data['caption_cot'])
+                    }
 
-    #print_gpu("models_initialized")
+                    # Process CLIP features
+                    clip_video = data['clip_video']
+                    clip_features = extractor.encode_video_with_clip(clip_video)
+                    output['metaclip_features'] = clip_features
 
-    for i, data in enumerate(tqdm(dataloader, desc="Processing", unit="batch")):
-        # 使用 torch.no_grad() 来加快推理速度
-        ids = data['id']  # 获取当前批次的所有 ID
-        with torch.no_grad():
-            # audio = data['audio'].cuda(rank, non_blocking=True)
-            output = {
-                'caption': str(data['caption']),
-                'caption_cot': str(data['caption_cot'])
-            }
+                    # Process Synchformer features
+                    sync_video = data['sync_video']
+                    sync_features = extractor.encode_video_with_sync(sync_video)
+                    output['sync_features'] = sync_features
 
-            # logging.info(f'Processing batch {i} with IDs: {ids}')  # 添加日志记录
+                    # Process text features
+                    caption = data['caption']
+                    metaclip_global_text_features, metaclip_text_features = extractor.encode_text(caption)
+                    output['metaclip_global_text_features'] = metaclip_global_text_features
+                    output['metaclip_text_features'] = metaclip_text_features
 
-            # latent = feature_extractor.module.encode_audio(audio)
-            # output['latent'] = latent.detach().cpu()
+                    # Process T5 features
+                    caption_cot = data['caption_cot']
+                    t5_features = extractor.encode_t5_text(caption_cot)
+                    output['t5_features'] = t5_features
 
-            clip_video = data['clip_video']
-            # logging.info(f'Processing batch {i} with shape: {clip_video.shape}')  # 添加日志记录
-            clip_features = extractor.encode_video_with_clip(clip_video)
-            output['metaclip_features'] = clip_features
-
-            sync_video = data['sync_video']
-            sync_features = extractor.encode_video_with_sync(sync_video)
-            output['sync_features'] = sync_features
-
-            caption = data['caption']
-            metaclip_global_text_features, metaclip_text_features = extractor.encode_text(caption)
-            output['metaclip_global_text_features'] = metaclip_global_text_features
-            output['metaclip_text_features'] = metaclip_text_features
-
-            caption_cot = data['caption_cot']
-            t5_features = extractor.encode_t5_text(caption_cot)
-            output['t5_features'] = t5_features
-
-
-            # 保存每个样本的输出
-            for j in range(len(ids)):
-                sample_output = {
-                    'id': ids[j],
-                    'caption': output['caption'][j],
-                    'caption_cot': output['caption_cot'][j],
-                    # 'latent': output['latent'][j],
-                    'metaclip_features': output['metaclip_features'][j],
-                    'sync_features': output['sync_features'][j],
-                    'metaclip_global_text_features': output['metaclip_global_text_features'][j],
-                    'metaclip_text_features': output['metaclip_text_features'][j],
-                    't5_features': output['t5_features'][j],
-                }
-                for k, v in sample_output.items():
-                    if isinstance(v, torch.Tensor):
-                        sample_output[k] = v.float().cpu().numpy()
-                # torch.save(sample_output, f'{save_dir}/{ids[j]}.pth')
-                np.savez(f'{args.save_dir}/{ids[j]}.npz', **sample_output)
-
-    #print_gpu("finished")
+                    # Save each sample
+                    for j in range(len(ids)):
+                        sample_output = {
+                            'id': ids[j],
+                            'caption': output['caption'][j] if isinstance(output['caption'], list) else str(output['caption']),
+                            'caption_cot': output['caption_cot'][j] if isinstance(output['caption_cot'], list) else str(output['caption_cot']),
+                            'metaclip_features': output['metaclip_features'][j],
+                            'sync_features': output['sync_features'][j],
+                            'metaclip_global_text_features': output['metaclip_global_text_features'][j],
+                            'metaclip_text_features': output['metaclip_text_features'][j],
+                            't5_features': output['t5_features'][j],
+                        }
+                        
+                        # Convert tensors to numpy arrays
+                        for k, v in sample_output.items():
+                            if isinstance(v, torch.Tensor):
+                                sample_output[k] = v.float().cpu().numpy()
+                        
+                        np.savez(f'{args.save_dir}/{ids[j]}.npz', **sample_output)
+                        processed_count += 1
+                        
+                        # Log progress every 10 samples
+                        if processed_count % 10 == 0:
+                            logger.info(f"Processed {processed_count} samples")
+                            print_gpu(f"batch_{i}_sample_{j}")
+                
+            except Exception as e:
+                logger.error(f"Error processing batch {i}: {str(e)}")
+                logger.error(f"IDs in failed batch: {ids}")
+                continue
+            
+            # Force garbage collection
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+    
+    except KeyboardInterrupt:
+        logger.info("Processing interrupted by user")
+    except Exception as e:
+        logger.error(f"Fatal error during processing: {str(e)}")
+        raise
+    
+    logger.info(f"Processing complete! Total samples processed: {processed_count}")
+    print_gpu("finished")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -208,7 +204,12 @@ if __name__ == '__main__':
     parser.add_argument('--start-row', type=int, default=0)
     parser.add_argument('--end-row', type=int, default=None)
     parser.add_argument('--use_half', action='store_true', help='Use half precision for models to save memory')
+    parser.add_argument('--verbose', action='store_true', help='Enable verbose logging')
+    
     args = parser.parse_args()
     args.audio_samples = int(args.sample_rate * args.duration_sec)
-    #args.synchformer_ckpt = hf_hub_download(repo_id="liuhuadai/ThinkSound", filename="synchformer_state_dict.pth")
+    
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+    
     main(args)
