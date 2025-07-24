@@ -2,7 +2,7 @@
 
 ## Problem Summary
 **Issue**: `ImportError: undefined symbol: _ZN3c105ErrorC2ENS_14SourceLocationESs`
-**Root Cause**: C++ ABI mismatch between flash-attn 2.7.1.post4 and PyTorch 2.6 + CUDA 12.6
+**Root Cause**: C++ ABI mismatch between flash-attn 2.8.0.post2 and PyTorch 2.6 + CUDA 12.6
 **Status**: Known compatibility issue (ERROR:ERR-2025-07-21-002)
 
 ## Definitive Solution

@@ -1,5 +1,24 @@
 # Engineering Journal
 
+## 2025-07-24 05:34
+
+### Flash-Attention Version Update and Installation Method Fix
+- **What**: Updated all references to flash-attn 2.7.x/2.8.0.post2 to use the correct URL-based installation method
+- **Why**: To ensure consistent installation of the correct flash-attn version and prevent compatibility issues
+- **How**: 
+  - Removed flash-attn==2.8.0.post2 from requirements_flash_attn.txt
+  - Modified startup_flash_attn.sh to install the specific version from the URL instead of using pip install
+  - Updated all references to flash-attn 2.7.x versions to 2.8.0.post2 with the correct URL installation method in multiple files:
+    - FLASH_ATTN_RESTORE.md (multiple references)
+    - startup.sh
+    - FLASH_ATTN_FINAL_SOLUTION.md
+    - memory.json
+    - requirements_flash_attn_compatible.txt
+    - PR_DESCRIPTION.md
+- **Issues**: Inconsistent flash-attn versions and installation methods causing potential compatibility issues
+- **Result**: All files now consistently use flash-attn 2.8.0.post2 installed from the pre-compiled wheel URL
+
+---
 ## 2025-07-22 05:09
 
 ### Extract Latents Hanging Issue Resolution

@@ -8,7 +8,7 @@ This PR resolves critical flash attention compatibility issues with PyTorch 2.6 
 - **Added deployment tools**: Created comprehensive fix utilities for various deployment scenarios
 
 ## Technical Details
-- **Root Cause**: flash_attn 2.7.1.post4 incompatible with PyTorch 2.6 + CUDA 12.6 ABI
+- **Root Cause**: flash_attn 2.8.0.post2 incompatible with PyTorch 2.6 + CUDA 12.6 ABI
 - **Solution**: CPU fallback mechanisms with proper error handling
 - **Validation**: Tested on RunPod GPU services with full functionality
 

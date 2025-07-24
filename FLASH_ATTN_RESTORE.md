@@ -10,18 +10,18 @@ Flash attention was previously disabled in the containerized environment due to 
 - **Python**: 3.10+
 - **PyTorch**: 2.6.0
 - **CUDA**: 12.6
-- **flash-attn**: 2.7.4.post1 (compatible with PyTorch 2.6 + CUDA 12.6)
+- **flash-attn**: 2.8.0.post2 (compatible with PyTorch 2.6 + CUDA 12.6)
 
 ## Files Created
 
 ### 1. `requirements_flash_attn.txt`
-Updated requirements file that includes flash-attn 2.7.4.post1 and compatible versions of all dependencies.
+Updated requirements file that includes flash-attn 2.8.0.post2 and compatible versions of all dependencies.
 
 ### 2. `startup_flash_attn.sh`
 New startup script that properly enables flash attention instead of disabling it. Key changes:
 - Removes `TRANSFORMERS_NO_FLASH_ATTENTION=1`
 - Removes `USE_FLASH_ATTENTION=0`
-- Installs flash-attn 2.7.4.post1
+- Installs flash-attn 2.8.0.post2 from pre-compiled wheel
 - Includes verification tests for flash attention functionality
 
 ### 3. `test_flash_attn.py`
@@ -45,7 +45,7 @@ chmod +x startup_flash_attn.sh
 ### Method 2: Manual installation
 ```bash
 # Install flash-attn directly
-pip install flash-attn==2.7.4.post1 --no-build-isolation
+pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.0.post2/flash_attn-2.8.0.post2+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl --no-build-isolation
 
 # Update environment variables
 unset TRANSFORMERS_NO_FLASH_ATTENTION
@@ -83,7 +83,7 @@ GPU count: 1
   GPU 0: NVIDIA A100...
 
 🔍 Testing flash attention installation...
-✅ flash-attn imported successfully: 2.7.4.post1
+✅ flash-attn imported successfully: 2.8.0.post2
 ✅ flash_attn_func imported successfully
 
 🔍 Testing flash attention functionality...
@@ -118,7 +118,7 @@ nvidia-smi
 ```
 
 #### 2. PyTorch version mismatch
-Flash-attn 2.7.4.post1 requires PyTorch 2.6.0:
+Flash-attn 2.8.0.post2 requires PyTorch 2.6.0:
 ```bash
 # Check PyTorch version
 python -c "import torch; print(torch.__version__)"
@@ -128,7 +128,7 @@ python -c "import torch; print(torch.__version__)"
 If flash-attn fails to build:
 ```bash
 # Install with no build isolation
-pip install flash-attn==2.7.4.post1 --no-build-isolation --no-cache-dir
+pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.0.post2/flash_attn-2.8.0.post2+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl --no-build-isolation --no-cache-dir
 
 # Ensure CUDA toolkit is available
 nvcc --version

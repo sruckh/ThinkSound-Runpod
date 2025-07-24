@@ -32,7 +32,7 @@ if [ -f "requirements_flash_attn.txt" ]; then
     pip install -r requirements_flash_attn.txt --no-cache-dir
 else
     echo "⚠️  Flash-attention requirements not found, installing flash-attn directly..."
-    pip install flash-attn==2.8.0.post2 --no-build-isolation --no-cache-dir
+    pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.0.post2/flash_attn-2.8.0.post2+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl --no-build-isolation --no-cache-dir
 fi
 
 # Verify flash-attn installation
