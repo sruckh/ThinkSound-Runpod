@@ -102,7 +102,7 @@ def main(args):
 
     # Initialize feature extractor
     logger.info("Initializing feature extractor...")
-    extractor = FeaturesUtils(
+    extractor = OriginalFeatures(
         vae_ckpt=None,
         vae_config=None,
         enable_conditions=True,
